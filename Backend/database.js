@@ -4,13 +4,10 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://pozee:Pozee5268@cluster0.3awtv3c.mongodb.net/items?retryWrites=true&w=majority",
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    );
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("✅ MongoDB connected...");
   } catch (err) {
     console.error("❌ DB connection failed", err);
