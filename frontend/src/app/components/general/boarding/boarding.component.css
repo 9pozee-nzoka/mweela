@@ -1,0 +1,77 @@
+.boarding-container {
+
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.boarding-nav {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+.boarding-nav button.active {
+  background: #007bff;
+  color: #fff;
+  border-radius: 5px;
+}
+
+
+.boarding-nav button {
+  border: none;
+  width: 100px;
+  height: 80px;
+    font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background: #1976d2;
+  color: white;
+  cursor: pointer;
+}
+
+.boarding-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-section{
+    flex: 1; 
+  max-width: 400px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+}
+
+.login-container{
+  align-items: center;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: green;
+  width: 800px;
+  height: 600px;
+}
+
+.button-container{
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  width: 60px;
+  background-color: yellow;
+}
+.register-container{
+ margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: green;
+  max-width: 600px;
+  max-height: 600px;
+  width: 800px;
+  height: 600px;
+}

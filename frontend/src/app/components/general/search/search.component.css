@@ -1,0 +1,31 @@
+.search-component {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centers content horizontally */
+  gap: 12px; /* space between search bar and user icon */
+  padding: 10px;
+  outline: 1px solid red;
+  background:rgb(231, 187, 120);
+}
+
+.search-bar {
+  flex: 1; /* make search bar expand to fill space */
+  max-width: 400px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  
+}
+
+.search-bar:focus {
+  border-color: 1px solid#4CAF50; /* green highlight on focus */
+  box-shadow: 0 0 4px rgba(76, 175, 80, 0.5);
+}
+
+.app-logo img {
+  height: 200px;
+  width: auto;
+  padding-right: 40px;
+  align-self: flex-start;
+}

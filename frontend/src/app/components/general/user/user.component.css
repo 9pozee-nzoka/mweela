@@ -1,0 +1,60 @@
+.user-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 40px;
+}
+
+.icon-group {
+  display: flex;
+  align-items: center;
+  gap: 18px; /* space between icons */
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px; /* Material icons size */
+  color: #2e7d32;  /* green */
+  display: flex;
+  align-items: center;
+  transition: color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.icon-btn:hover {
+  color: #1b5e20; /* darker green */
+  transform: scale(1.1);
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: #fff;
+  min-width: 140px;
+  border-radius: 6px;
+  box-shadow: 0px 4px 6px rgba(0,0,0,0.15);
+  z-index: 100;
+  padding: 5px 0;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 14px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.dropdown-content a:hover {
+  background: #f1f1f1;
+}
