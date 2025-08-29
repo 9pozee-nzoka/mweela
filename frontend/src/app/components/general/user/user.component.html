@@ -1,0 +1,31 @@
+<div class="user-container">
+  <!-- Cart icon (always visible) -->
+  <button (click)="goToCart()" class="icon-btn" title="Cart">
+    <i class="material-icons">shopping_cart</i>
+  </button>
+
+  <!-- If not logged in -->
+  <ng-container *ngIf="!isLoggedIn; else loggedIn">
+    <button (click)="goToLogin()" class="icon-btn" title="Login">
+      <i class="material-icons">person</i>
+    </button>
+  </ng-container>
+
+  <!-- If logged in -->
+  <ng-template #loggedIn>
+    <div class="dropdown">
+      <button class="icon-btn">
+        <i class="material-icons">person</i> {{ username }}
+      </button>
+      <div class="dropdown-content">
+        <a (click)="goToProfile()">Profile</a>
+        <a (click)="logout()">Logout</a>
+      </div>
+    </div>
+
+    <!-- Logout icon -->
+    <button (click)="logout()" class="icon-btn" title="Logout">
+      <i class="material-icons">logout</i>
+    </button>
+  </ng-template>
+</div>

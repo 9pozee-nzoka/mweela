@@ -1,0 +1,18 @@
+.home-component{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+}
+
+.app-logo img {
+  height: 45px;
+  width: auto;
+}
+
+.data-cards{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    padding: 0;
+}

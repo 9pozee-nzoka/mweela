@@ -1,0 +1,36 @@
+/* Main navbar (logo, search, icons) */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ff99dd; /* light yellow like in the image */
+  padding: 10px 20px;
+}
+
+.navbar-component{
+    display: flex;
+    align-items: center;
+    gap: 16rem;
+    position: sticky;
+    top: 0%;
+    left: 0%;
+    justify-items: center;
+}
+
+.navbar-menu{
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    padding-left: 600px;
+    
+}
+
+.nav-link {
+    color: green;
+    font-family: IBM;
+    font-weight: bold;
+    font-size:medium;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
