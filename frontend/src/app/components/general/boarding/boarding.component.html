@@ -45,7 +45,12 @@
     </div>
   </div>
 
- 
+  <!-- Logout -->
+ <button *ngIf="isLoggedIn" 
+        [class.active]="activeView === 'logout'" 
+        (click)="setView('logout')">
+  Logout
+</button>
 
 </div>
 <p *ngIf="message" class="message">{{ message }}</p>

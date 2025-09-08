@@ -3,6 +3,7 @@ import { BoardingService } from './boarding.service';
 import { ButtonComponent } from '../buttons/buttons.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-boarding',
@@ -26,6 +27,7 @@ export class BoardingComponent {
   };
 
   constructor(private boardingService: BoardingService) {}
+  private router: Router = new Router(); // Initialize the router
 
   setView(view: 'login' | 'register' | 'logout') {
     this.activeView = view;
@@ -41,9 +43,13 @@ export class BoardingComponent {
         this.message = 'Login successful';
         this.activeView = 'logout';
         this.resetForm();
+        // Redirect to homepage
+    this.router.navigate(['/home']);
       },
       error: (err) => this.message = err.error.msg || 'Login failed'
     });
+
+    
   }
 
   register() {

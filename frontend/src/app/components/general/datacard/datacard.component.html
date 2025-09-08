@@ -1,18 +1,6 @@
-<div class="data-card">
-        <div 
-        class="item-name"
-        >{{item}}</div>
-
-        <div 
-        class="item-image"
-        >{{image}} </div>
-
-        <div
-        class="item-price"
-        >{{price}}</div>
-
-        <div
-        class="item-description"
-        >{{description}}</div>
-       
-    </div>
+<div class="card">
+  <img [src]="image" alt="{{ item }}" />
+  <h3>{{ item }}</h3>
+  <p>{{ description }}</p>
+  <strong>{{ price }}</strong>
+</div>

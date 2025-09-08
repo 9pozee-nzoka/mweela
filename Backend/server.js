@@ -3,59 +3,91 @@ import mongoose from "mongoose";
 import AdminJS from "adminjs";
 import * as AdminJSMongoose from "@adminjs/mongoose";
 import AdminJSExpress from "@adminjs/express";
+import uploadFeature from "@adminjs/upload";
 import dotenv from "dotenv";
 import connectDB from "./database.js";
 import Product from "./models/Product.js";
-import User from "./models/User.js";   // ✅ add this
-import Cart from "./models/Cart.js";   // ✅ add this
+import User from "./models/User.js";
+import Cart from "./models/Cart.js";
 import Order from "./models/Order.js";
 import authRoutes from "./routes/authRoutes.js";
-import cors from 'cors';
+import productRoutes from "./routes/productRoutes.js";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import fs from "fs";
 
-const app = express();
-const PORT = 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ensure uploads folder exists
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
 dotenv.config();
-// ✅ Connect to MongoDB
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// connect DB
 connectDB();
 
-// ✅ Register AdminJS Mongoose adapter
+// register mongoose adapter
 AdminJS.registerAdapter({
   Resource: AdminJSMongoose.Resource,
   Database: AdminJSMongoose.Database,
 });
 
-// ✅ AdminJS setup- populating the admin panel with resources
+// ✅ Create a ComponentLoader
+const componentLoader = new AdminJS.ComponentLoader();
+
+// setup AdminJS
 const adminJs = new AdminJS({
   resources: [
+    {
+      resource: Product,
+      options: { parent: { name: "Shop" } },
+      features: [
+        uploadFeature({
+          provider: {
+            local: { bucket: uploadDir },
+          },
+          properties: {
+            key: "image", // field in MongoDB
+            file: "image", // virtual field for upload
+          },
+          uploadPath: (record, filename) => `products/${Date.now()}-${filename}`,
+          componentLoader, // ✅ attach loader here
+        }),
+      ],
+    },
     { resource: User, options: { parent: { name: "User Management" } } },
     { resource: Order, options: { parent: { name: "User Management" } } },
-    { resource: Product, options: { parent: { name: "Shop" } } },
     { resource: Cart, options: { parent: { name: "Shop" } } },
   ],
   rootPath: "/admin",
+  componentLoader, // ✅ add here too
 });
-app.use(cors({
-  origin: 'http://localhost:4200', // your frontend URL
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // allowed HTTP methods
-  credentials: true, // if you need cookies/auth
-}));
-// ✅ AdminJS router- calling the buildRouter function
-const router = AdminJSExpress.buildRouter(adminJs);
 
-// ✅ Mount admin panel
-app.use(adminJs.options.rootPath, router);
+// middleware
+app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
+app.use("/uploads", express.static(uploadDir));
+
+// admin router
+const adminRouter = AdminJSExpress.buildRouter(adminJs);
+app.use(adminJs.options.rootPath, adminRouter);
+
+// routes
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
 
-// Test API
-app.get("/", (req, res) => {
-  res.send("Server is running with MongoDB + AdminJS!");
-});
+// health check
+app.get("/", (req, res) => res.send("Server is running 🚀"));
 
-// Start server
+// start server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
   console.log(`🛠️ AdminJS Panel: http://localhost:${PORT}/admin`);
 });
-
-app.listen(3000, () => console.log('Server running on port 3000'));
