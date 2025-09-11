@@ -1,0 +1,16 @@
+<div *ngIf="loading">Loading carts...</div>
+<div *ngIf="error">{{ error }}</div>
+<div *ngIf="!loading && carts.length === 0">No carts found.</div>
+
+<div *ngFor="let cart of carts" class="cart-card">
+  <h3>Cart ID: {{ cart._id }}</h3>
+  <p>Total: {{ cart.totalAmount | currency }}</p>
+  <ul>
+    <li *ngFor="let item of cart.items">
+      {{ item.product?.name || 'Unknown Product' }} -
+      Qty: {{ item.quantity }} -
+      Price: {{ item.price | currency }}
+    </li>
+  </ul>
+</div>
+

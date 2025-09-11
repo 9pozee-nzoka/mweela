@@ -12,10 +12,14 @@ import Cart from "./models/Cart.js";
 import Order from "./models/Order.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import userRoutes from "./routes/userRoutes.js";     // ✅ users
+import orderRoutes from "./routes/orderRoutes.js";   // ✅ orders
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
+import cartRoutes from "./routes/cartRoutes.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,7 +43,7 @@ AdminJS.registerAdapter({
   Database: AdminJSMongoose.Database,
 });
 
-// ✅ Create a ComponentLoader
+// ✅ create componentLoader for future custom components
 const componentLoader = new AdminJS.ComponentLoader();
 
 // setup AdminJS
@@ -54,11 +58,10 @@ const adminJs = new AdminJS({
             local: { bucket: uploadDir },
           },
           properties: {
-            key: "image", // field in MongoDB
-            file: "image", // virtual field for upload
+            key: "image",   // saved in MongoDB
+            file: "upload", // virtual field in the UI
           },
           uploadPath: (record, filename) => `products/${Date.now()}-${filename}`,
-          componentLoader, // ✅ attach loader here
         }),
       ],
     },
@@ -67,7 +70,7 @@ const adminJs = new AdminJS({
     { resource: Cart, options: { parent: { name: "Shop" } } },
   ],
   rootPath: "/admin",
-  componentLoader, // ✅ add here too
+  componentLoader,
 });
 
 // middleware
@@ -75,19 +78,30 @@ app.use(cors({ origin: "http://localhost:4200", credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static(uploadDir));
 
-// admin router
+// admin router (unprotected for now)
 const adminRouter = AdminJSExpress.buildRouter(adminJs);
 app.use(adminJs.options.rootPath, adminRouter);
 
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/users", userRoutes);     
+app.use("/api/orders", orderRoutes);   // ✅ added
+app.use("/api/users/:userId/carts", cartRoutes);
 
 // health check
 app.get("/", (req, res) => res.send("Server is running 🚀"));
+
+// error handler (to debug AdminJS errors)
+app.use((err, req, res, next) => {
+  console.error("❌ Unexpected error:", err);
+  res.status(500).json({ error: "Something went wrong", details: err.message });
+});
 
 // start server
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
   console.log(`🛠️ AdminJS Panel: http://localhost:${PORT}/admin`);
 });
+
+

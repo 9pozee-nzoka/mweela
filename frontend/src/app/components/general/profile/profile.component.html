@@ -1,0 +1,19 @@
+ <h2>User Profile</h2>
+    <div *ngIf="user">
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+
+      <h3>Orders</h3>
+      <ul>
+        <li *ngFor="let order of user.orders">
+          Order #{{ order._id }} - Total: ${{ order.totalAmount }}
+        </li>
+      </ul>
+
+      <h3>Carts</h3>
+      <ul>
+        <li *ngFor="let cart of user.carts">
+          Cart #{{ cart._id }} - Total: ${{ cart.totalAmount }}
+        </li>
+      </ul>
+    </div>

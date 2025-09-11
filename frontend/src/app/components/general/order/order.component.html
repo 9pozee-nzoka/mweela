@@ -1,0 +1,13 @@
+<h2>User Orders</h2>
+    <div *ngFor="let order of orders">
+      <p><strong>Order ID:</strong> {{ order._id }}</p>
+      <p><strong>Total:</strong> ${{ order.totalAmount }}</p>
+      <p><strong>Status:</strong> {{ order.status }}</p>
+
+      <ul>
+        <li *ngFor="let item of order.items">
+          {{ item.product.name }} (x{{ item.quantity }}) - ${{ item.price }}
+        </li>
+      </ul>
+      <hr>
+    </div>

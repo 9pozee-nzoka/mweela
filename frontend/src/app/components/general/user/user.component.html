@@ -15,17 +15,15 @@
   <ng-template #loggedIn>
     <div class="dropdown">
       <button class="icon-btn">
-        <i class="material-icons">person</i> {{ username }}
+        <i class="material-icons">person</i>
+        <span class="username">{{ username }}</span>
+        <i class="material-icons">arrow_drop_down</i>
       </button>
+
       <div class="dropdown-content">
         <a (click)="goToProfile()">Profile</a>
         <a (click)="logout()">Logout</a>
       </div>
     </div>
-
-    <!-- Logout icon -->
-    <button (click)="logout()" class="icon-btn" title="Logout">
-      <i class="material-icons">logout</i>
-    </button>
   </ng-template>
 </div>
