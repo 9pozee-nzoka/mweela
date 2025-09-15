@@ -72,4 +72,29 @@ router.post("/logout", (req, res) => {
   res.json({ msg: "Logged out successfully" });
 });
 
+// 🔹 Get user profile by ID (includes carts + orders if populated)
+router.get("/profile/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+      .select("-password") // 🚫 exclude password
+      .populate({
+        path: "carts",
+        populate: { path: "items.product" }, // populate product details in cart items
+      })
+      .populate({
+        path: "orders",
+        populate: { path: "cart" }, // populate cart inside orders
+      });
+
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
 export default router;

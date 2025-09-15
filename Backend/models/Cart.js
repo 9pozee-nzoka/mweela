@@ -11,15 +11,28 @@ const cartItemSchema = new mongoose.Schema({
 });
 
 const cartSchema = new mongoose.Schema({
-  userId: { type: String, required: true }, // later link to a real User model
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // ✅ properly linked to User model
+    required: true,
+  },
   items: [cartItemSchema],
-  totalAmount: { type: Number, required: true },
+  totalAmount: { type: Number, default: 0 },
   status: {
     type: String,
     enum: ["Pending", "Paid", "Shipped", "Completed", "Cancelled"],
     default: "Pending",
   },
   createdAt: { type: Date, default: Date.now },
+});
+
+// ✅ Auto-calculate totalAmount
+cartSchema.pre("save", function (next) {
+  this.totalAmount = this.items.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
+  next();
 });
 
 const Cart = mongoose.model("Cart", cartSchema);
