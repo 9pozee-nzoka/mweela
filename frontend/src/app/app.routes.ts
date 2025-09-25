@@ -8,7 +8,7 @@ import { AuthGuard } from './auth.guard';
 import { LoginGuard } from './login.guard';
 import { AdminGuard } from './admin.guard';
 import { AdminRedirectComponent } from './components/admin-redirect/admin-redirect.component';
-
+// routes configuration
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: BoardingComponent, canActivate: [LoginGuard] },
