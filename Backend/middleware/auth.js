@@ -1,3 +1,4 @@
+// middleware/auth.js
 import jwt from "jsonwebtoken";
 
 export const protect = (req, res, next) => {
@@ -5,7 +6,7 @@ export const protect = (req, res, next) => {
   if (!token) return res.status(401).json({ msg: "No token, authorization denied" });
 
   try {
-    const decoded = jwt.verify(token, "your_jwt_secret");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret");
     req.user = decoded; // { id, role }
     next();
   } catch (err) {
@@ -13,7 +14,7 @@ export const protect = (req, res, next) => {
   }
 };
 
-// 🔹 Only admins can access
+// ✅ only allow admins
 export const adminOnly = (req, res, next) => {
   if (req.user?.role !== "admin") {
     return res.status(403).json({ msg: "Access denied. Admins only." });
