@@ -36,7 +36,8 @@ export class BoardingComponent {
     this.activeView = view;
   }
 
-  login() {
+ // BoardingComponent.ts
+login() {
   this.boardingService.login({
     email: this.form.email,
     password: this.form.password
@@ -45,21 +46,22 @@ export class BoardingComponent {
       localStorage.setItem('token', res.token);
 
       if (res.user) {
-        // case: backend sends user object
         localStorage.setItem('userId', res.user.id);
         localStorage.setItem('username', res.user.username);
-      } else {
-        // case: backend sends flat values
-        localStorage.setItem('userId', res.userId);
-        localStorage.setItem('username', res.username);
+        localStorage.setItem('role', res.user.role);
       }
 
       this.message = 'Login successful';
       this.activeView = 'logout';
       this.resetForm();
 
-      // ✅ redirect to home
-      this.router.navigate(['/home']);
+      const role = localStorage.getItem('role');
+      if (role === 'admin') {
+        // ✅ send them directly to Express AdminJS backend
+        window.location.href = 'http://localhost:3000/admin';
+      } else {
+        this.router.navigate(['/home']);
+      }
     },
     error: (err) => this.message = err.error.msg || 'Login failed'
   });

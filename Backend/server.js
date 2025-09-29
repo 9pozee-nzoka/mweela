@@ -19,6 +19,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 import cartRoutes from "./routes/cartRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -84,6 +85,7 @@ app.use(adminJs.options.rootPath, adminRouter);
 
 // routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);     
 app.use("/api/orders", orderRoutes);   // ✅ added
