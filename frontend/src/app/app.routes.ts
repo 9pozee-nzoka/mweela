@@ -8,6 +8,7 @@ import { AuthGuard } from './auth.guard';
 import { LoginGuard } from './login.guard';
 import { AdminGuard } from './admin.guard';
 import { AdminRedirectComponent } from './components/admin-redirect/admin-redirect.component';
+import { ProductListComponent } from './components/general/products/products.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: 'profile/:id', component: ProfileComponent, canActivate: [AuthGuard] },
   { path: 'orders/:id', component: OrdersComponent, canActivate: [AuthGuard] },
   { path: 'cart/:id', component: CartComponent, canActivate: [AuthGuard] },
+  { path: 'product', component: ProductListComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: 'login' }
 ];

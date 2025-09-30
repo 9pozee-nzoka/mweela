@@ -5,10 +5,10 @@ import { BoardingComponent } from "./components/general/boarding/boarding.compon
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BoardingComponent], // 👈 IMPORTANT
+  imports: [RouterOutlet,], // 👈 IMPORTANT
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'frontend';
+  title = 'Mweela Junior Supplies';
 }
