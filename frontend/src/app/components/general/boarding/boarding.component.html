@@ -1,57 +1,64 @@
 <div class="boarding-container">
-  <!-- Tabs / Navigation -->
+  <!-- Navigation Tabs -->
   <nav class="boarding-nav">
     <button [class.active]="activeView === 'login'" (click)="setView('login')">Login</button>
     <button [class.active]="activeView === 'register'" (click)="setView('register')">Register</button>
-    <button [class.active]="activeView === 'logout'" (click)="setView('logout')">Logout</button>
+    <button *ngIf="isLoggedIn" [class.active]="activeView === 'logout'" (click)="logout()">Logout</button>
   </nav>
 
-
-  <!-- Login -->
+  <!-- LOGIN -->
   <div *ngIf="activeView === 'login'" class="boarding-section">
-    <div class="login-container">
-    <h2 >Login</h2>
+    <h2>Login</h2>
     <form (ngSubmit)="login()">
       <input class="input-section" type="email" [(ngModel)]="form.email" name="email" placeholder="Email" required><br><br>
       <input class="input-section" type="password" [(ngModel)]="form.password" name="password" placeholder="Password" required><br><br>
       <div class="button-container">
-      <app-button
-      [buttonType]="'submit'"
-      [buttonText]="'Login'"
-      [buttonLink]="'#'"></app-button>
+        <!-- 🚫 removed buttonLink="#" -->
+        <app-button [buttonType]="'submit'" [buttonText]="'Login'"></app-button>
       </div>
     </form>
-    </div>
+    <a (click)="setView('forgot')" style="cursor: pointer">Forgot Password?</a>
   </div>
 
-  <!-- Register -->
+  <!-- REGISTER -->
   <div *ngIf="activeView === 'register'" class="boarding-section">
-    <div class="register-container">
     <h2>Register</h2>
     <form (ngSubmit)="register()">
       <input class="input-section" type="text" [(ngModel)]="form.username" name="username" placeholder="Username" required><br><br>
       <input class="input-section" type="email" [(ngModel)]="form.email" name="email" placeholder="Email" required><br><br>
       <input class="input-section" type="password" [(ngModel)]="form.password" name="password" placeholder="Password" required><br><br>
       <input class="input-section" type="password" [(ngModel)]="form.confirmPassword" name="confirmPassword" placeholder="Confirm Password" required><br><br>
-
       <div class="button-container">
-      <app-button
-      [buttonType]="'submit'"
-      [buttonText]="'Register'"
-      [buttonLink]="'#'"></app-button>
-      </div>  
-      
+        <app-button [buttonType]="'submit'" [buttonText]="'Register'"></app-button>
+      </div>
     </form>
-    </div>
   </div>
 
-  <!-- Logout -->
- <button *ngIf="isLoggedIn" 
-        [class.active]="activeView === 'logout'" 
-        (click)="setView('logout')">
-  Logout
-</button>
+  <!-- FORGOT PASSWORD -->
+  <div *ngIf="activeView === 'forgot'" class="boarding-section">
+    <h2>Forgot Password</h2>
+    <form (ngSubmit)="forgotPassword()">
+      <input class="input-section" type="email" [(ngModel)]="form.email" name="forgotEmail" placeholder="Enter your email" required><br><br>
+      <div class="button-container">
+        <app-button [buttonType]="'submit'" [buttonText]="'Send Reset Link'"></app-button>
+      </div>
+    </form>
+    <a (click)="setView('login')" style="cursor: pointer">Back to Login</a>
+  </div>
 
+  <!-- RESET PASSWORD -->
+  <div *ngIf="activeView === 'reset'" class="boarding-section">
+    <h2>Reset Password</h2>
+    <form (ngSubmit)="resetPassword()">
+      <input class="input-section" type="text" [(ngModel)]="resetForm.token" name="token" placeholder="Enter reset token" required><br><br>
+      <input class="input-section" type="password" [(ngModel)]="resetForm.password" name="newPassword" placeholder="New Password" required><br><br>
+      <input class="input-section" type="password" [(ngModel)]="resetForm.confirmPassword" name="confirmPassword" placeholder="Confirm New Password" required><br><br>
+      <div class="button-container">
+        <app-button [buttonType]="'submit'" [buttonText]="'Reset Password'"></app-button>
+      </div>
+    </form>
+    <a (click)="setView('login')" style="cursor: pointer">Back to Login</a>
+  </div>
 </div>
-<p *ngIf="message" class="message">{{ message }}</p>
 
+<p *ngIf="message" class="message">{{ message }}</p>
