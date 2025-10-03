@@ -1,42 +1,14 @@
 import express from "express";
-import Order from "../models/Order.js";
-import User from "../models/User.js";
+import { createOrder, getUserOrders } from "../controllers/orderController.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
-// ✅ Create new order
-router.post("/", async (req, res) => {
-  try {
-    const { userId, cartId, shippingAddress, paymentMethod } = req.body;
+// 🛒 Get all orders for a user
+// GET /api/orders/:userId
+router.get("/:userId", getUserOrders);
 
-    const order = new Order({
-      userId,
-      cart: cartId,
-      shippingAddress,
-      paymentMethod,
-      status: "Pending",
-    });
-
-    await order.save();
-
-    // 🔹 Push order reference to User
-    await User.findByIdAndUpdate(userId, { $push: { orders: order._id } });
-
-    res.status(201).json(order);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ✅ Get customer orders
-router.get("/:userId", async (req, res) => {
-  try {
-    const orders = await Order.find({ userId: req.params.userId })
-      .populate("cart");
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// 🛒 Create an order for a user
+// POST /api/orders/:userId
+router.post("/:userId", createOrder);
 
 export default router;
