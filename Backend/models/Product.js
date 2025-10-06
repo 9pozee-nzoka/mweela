@@ -7,6 +7,12 @@ const productSchema = new mongoose.Schema({
   description: String,
   image: { type: String }, // store uploaded image path
   createdAt: { type: Date, default: Date.now },
+  category: { 
+    type: String, 
+    required: true,
+    enum: ["junior", "primary", "secondary", "general", "construction"],
+    default: "general"
+  },
 });
 
 const Product = mongoose.model("Product", productSchema);
