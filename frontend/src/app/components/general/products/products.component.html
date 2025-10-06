@@ -1,21 +1,28 @@
-<h2>Primary Products</h2>
-<div class="grid">
-  <div *ngFor="let product of primaryProducts" class="card">
-    <img [src]="product.imageUrl" alt="{{product.name}}" />
-    <h3>{{ product.name }}</h3>
-    <p>{{ product.description }}</p>
-    <p><strong>KES {{ product.price }}</strong></p>
-    <button (click)="addToCart(product._id)">Add to Cart</button>
+<!-- src/app/components/products/products.component.html -->
+
+<div class="products-container" *ngIf="!isLoading && !errorMessage">
+  <div *ngFor="let category of productsByCategory | keyvalue">
+    <h2>{{ category.key | titlecase }} Products</h2>
+
+    <div class="grid">
+      <div *ngFor="let product of category.value" class="card">
+        <img
+          [src]="
+            product.image?.startsWith('http')
+              ? product.image
+              : 'http://localhost:3000' + product.image
+          "
+          alt="{{ product.name }}"
+        />
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <p><strong>KES {{ product.price }}</strong></p>
+        <button (click)="addToCart(product._id)">Add to Cart</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<h2>Junior Secondary Products</h2>
-<div class="grid">
-  <div *ngFor="let product of juniorProducts" class="card">
-    <img [src]="product.imageUrl" alt="{{product.name}}" />
-    <h3>{{ product.name }}</h3>
-    <p>{{ product.description }}</p>
-    <p><strong>KES {{ product.price }}</strong></p>
-    <button (click)="addToCart(product._id)">Add to Cart</button>
-  </div>
-</div>
+<!-- Loading and error states -->
+<div class="loading" *ngIf="isLoading">Loading products...</div>
+<div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>

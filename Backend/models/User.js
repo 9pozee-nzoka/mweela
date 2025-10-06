@@ -8,6 +8,12 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     avatarUrl: { type: String, default: "" },
+    type_of_user: {
+      type: String,
+      enum: ["personal", "institutional"],
+      default: "personal",
+    },
+
     role: {
       type: String,
       enum: ["customer", "admin"],
@@ -16,9 +22,9 @@ const userSchema = new mongoose.Schema(
     carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 
-    // 🔹 Forgot password fields
+    // 🔹 Forgot password fields (match authRoutes.js)
     resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
+    resetPasswordExpire: { type: Date },
   },
   { timestamps: true }
 );
@@ -44,7 +50,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 userSchema.methods.generatePasswordResetToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
   this.resetPasswordToken = resetToken;
-  this.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  this.resetPasswordExpire = Date.now() + 3600000; // 1 hour
   return resetToken;
 };
 
