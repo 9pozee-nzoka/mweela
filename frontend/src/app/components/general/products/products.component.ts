@@ -1,13 +1,14 @@
+// src/app/components/products/products.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
 
 @Component({
-  selector: 'app-product-list',
   standalone: true,
   imports: [CommonModule],
+  selector: 'app-products',
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.css']
+  styleUrls: ['./products.component.css'],
 })
 export class ProductListComponent implements OnInit {
   primaryProducts: any[] = [];

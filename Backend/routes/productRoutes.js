@@ -10,7 +10,7 @@ const router = express.Router();
 ---------------------------- */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // save to backend/uploads/
+    cb(null, "uploads/"); // save uploaded images to backend/uploads/
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname)); // e.g., 17282438823.jpg
@@ -41,6 +41,7 @@ router.post("/", upload.single("image"), async (req, res) => {
     await product.save();
     res.status(201).json(product);
   } catch (err) {
+    console.error("Error creating product:", err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -50,8 +51,39 @@ router.post("/", upload.single("image"), async (req, res) => {
 ---------------------------- */
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find();
+    const { category } = req.query;
+    const filter = category ? { category } : {};
+    const products = await Product.find(filter);
     res.json(products);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * 🟨 FETCH SINGLE PRODUCT BY ID
+ * GET /api/products/:id
+ */
+router.get("/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * 🟥 DELETE PRODUCT
+ * DELETE /api/products/:id
+ */
+router.delete("/:id", async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Product not found" });
+    res.json({ message: "Product deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     avatarUrl: { type: String, default: "" },
-
     type_of_user: {
       type: String,
       enum: ["personal", "institutional"],
@@ -24,9 +23,9 @@ const userSchema = new mongoose.Schema(
     carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 
-    // 🔹 Forgot password fields (match routes)
+    // 🔹 Forgot password fields (match authRoutes.js)
     resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date }, // ✅ fixed key name
+    resetPasswordExpire: { type: Date },
   },
   { timestamps: true }
 );

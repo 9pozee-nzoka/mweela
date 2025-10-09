@@ -32,6 +32,7 @@ h2 {
   height: 180px;
   object-fit: cover;
   border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 button {
@@ -41,6 +42,18 @@ button {
   border-radius: 6px;
   padding: 8px 14px;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.card button:hover {
+  background: #0056b3;
+}
+
+.loading,
+.error {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.1rem;
 }
 
 button:hover {

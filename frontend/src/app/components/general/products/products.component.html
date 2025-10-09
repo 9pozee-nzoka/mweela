@@ -21,3 +21,7 @@
     </div>
   </div>
 </div>
+
+<!-- Loading and error states -->
+<div class="loading" *ngIf="isLoading">Loading products...</div>
+<div class="error" *ngIf="errorMessage">{{ errorMessage }}</div>
