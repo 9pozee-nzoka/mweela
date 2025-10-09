@@ -6,16 +6,30 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ProductService {
-  private apiUrl = 'http://localhost:5000/api/products';
+  private readonly apiUrl = 'http://localhost:3000/api/products';
+  private readonly cartUrl = 'http://localhost:3000/api/cart';
 
   constructor(private http: HttpClient) {}
 
-  getProductsByCategory(category: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/${category}`);
+  /**
+   * 🧾 Get all products
+   */
+  getAllProducts(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 
+  /**
+   * 🏷️ Get products by category (e.g., 'junior', 'primary', etc.)
+   */
+  getProductsByCategory(category: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/category/${category.toLowerCase()}`);
+  }
+
+  /**
+   * 🛒 Add product to cart
+   */
   addToCart(userId: string, productId: string, quantity: number): Observable<any> {
-    return this.http.post('http://localhost:5000/api/cart/add', {
+    return this.http.post(`${this.cartUrl}/add`, {
       userId,
       productId,
       quantity

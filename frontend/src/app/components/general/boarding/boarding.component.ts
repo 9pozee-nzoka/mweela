@@ -52,10 +52,10 @@ export class BoardingComponent {
         localStorage.setItem('token', res.token);
 
         if (res.user) {
-          localStorage.setItem('userId', res.user.id);
-          localStorage.setItem('username', res.user.username);
+          localStorage.setItem('userId', res.user._id);  // ✅ FIXED
+          localStorage.setItem('username', res.user.username || res.user.name);
           localStorage.setItem('role', res.user.role);
-        }
+    }
 
         this.message = 'Login successful';
         this.activeView = 'logout';

@@ -8,17 +8,25 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String, required: true },
     avatarUrl: { type: String, default: "" },
+
+    type_of_user: {
+      type: String,
+      enum: ["personal", "institutional"],
+      default: "personal",
+    },
+
     role: {
       type: String,
       enum: ["customer", "admin"],
       default: "customer",
     },
+
     carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 
-    // 🔹 Forgot password fields
+    // 🔹 Forgot password fields (match routes)
     resetPasswordToken: { type: String },
-    resetPasswordExpires: { type: Date },
+    resetPasswordExpires: { type: Date }, // ✅ fixed key name
   },
   { timestamps: true }
 );
@@ -40,11 +48,17 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// 🔹 Generate reset token
+// 🔹 Generate reset token (matches authRoutes.js)
 userSchema.methods.generatePasswordResetToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
-  this.resetPasswordToken = resetToken;
-  this.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+  // Hash token before saving
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
   return resetToken;
 };
 

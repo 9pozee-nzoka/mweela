@@ -7,6 +7,6 @@ import { Component, OnInit } from '@angular/core';
 export class AdminRedirectComponent implements OnInit {
   ngOnInit() {
     // ✅ Redirect to backend AdminJS
-    window.location.href = 'http://localhost:5000/admin';
+    window.location.href = 'http://localhost:3000/admin';
   }
 }

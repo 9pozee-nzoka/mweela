@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService } from '../../../services/product.service';
 import { CommonModule } from '@angular/common';
+import { ProductService } from '../../../services/product.service';
 
 @Component({
   selector: 'app-product-list',
-  imports:[CommonModule],
-  standalone:true,
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.css']
 })
 export class ProductListComponent implements OnInit {
   primaryProducts: any[] = [];
   juniorProducts: any[] = [];
-  userId = "64abc1234"; // replace with logged-in user id (auth later)
+  userId = '64abc1234'; // TODO: replace later with real logged-in user ID
 
   constructor(private productService: ProductService) {}
 
@@ -20,19 +20,22 @@ export class ProductListComponent implements OnInit {
     this.loadProducts();
   }
 
-  loadProducts() {
-    this.productService.getProductsByCategory("Primary").subscribe(res => {
-      this.primaryProducts = res;
+  loadProducts(): void {
+    this.productService.getProductsByCategory('Primary').subscribe({
+      next: (res) => (this.primaryProducts = res),
+      error: (err) => console.error('Error loading primary products:', err)
     });
 
-    this.productService.getProductsByCategory("Junior Secondary").subscribe(res => {
-      this.juniorProducts = res;
+    this.productService.getProductsByCategory('Junior').subscribe({
+      next: (res) => (this.juniorProducts = res),
+      error: (err) => console.error('Error loading junior products:', err)
     });
   }
 
-  addToCart(productId: string) {
-    this.productService.addToCart(this.userId, productId, 1).subscribe(res => {
-      alert("Product added to cart!");
+  addToCart(productId: string): void {
+    this.productService.addToCart(this.userId, productId, 1).subscribe({
+      next: () => alert('✅ Product added to cart!'),
+      error: (err) => console.error('Error adding to cart:', err)
     });
   }
 }
