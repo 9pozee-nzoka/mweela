@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
       enum: ["customer", "admin"],
       default: "customer",
     },
+
     carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
     orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 
@@ -46,11 +47,17 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// 🔹 Generate reset token
+// 🔹 Generate reset token (matches authRoutes.js)
 userSchema.methods.generatePasswordResetToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
-  this.resetPasswordToken = resetToken;
-  this.resetPasswordExpire = Date.now() + 3600000; // 1 hour
+
+  // Hash token before saving
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
   return resetToken;
 };
 

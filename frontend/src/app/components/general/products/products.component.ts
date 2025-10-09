@@ -1,7 +1,7 @@
 // src/app/components/products/products.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ProductService } from '../../../services/product.service';
 import { CommonModule } from '@angular/common';
+import { ProductService } from '../../../services/product.service';
 
 @Component({
   standalone: true,
@@ -11,9 +11,9 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./products.component.css'],
 })
 export class ProductListComponent implements OnInit {
-  productsByCategory: { [key: string]: any[] } = {};
-  isLoading = true;
-  errorMessage = '';
+  primaryProducts: any[] = [];
+  juniorProducts: any[] = [];
+  userId = '64abc1234'; // TODO: replace later with real logged-in user ID
 
   constructor(private productService: ProductService) {}
 
@@ -21,29 +21,22 @@ export class ProductListComponent implements OnInit {
     this.loadProducts();
   }
 
-  loadProducts() {
-    this.productService.getAllProducts().subscribe({
-      next: (products) => {
-        // ✅ Group products by category
-        this.productsByCategory = products.reduce((groups, product) => {
-          const category = product.category || 'general';
-          if (!groups[category]) groups[category] = [];
-          groups[category].push(product);
-          return groups;
-        }, {} as { [key: string]: any[] });
+  loadProducts(): void {
+    this.productService.getProductsByCategory('Primary').subscribe({
+      next: (res) => (this.primaryProducts = res),
+      error: (err) => console.error('Error loading primary products:', err)
+    });
 
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('Error loading products:', err);
-        this.errorMessage = 'Failed to load products.';
-        this.isLoading = false;
-      },
+    this.productService.getProductsByCategory('Junior').subscribe({
+      next: (res) => (this.juniorProducts = res),
+      error: (err) => console.error('Error loading junior products:', err)
     });
   }
 
-  addToCart(productId: string) {
-    console.log('Add to cart:', productId);
-    // 🔹 You can integrate this with your cart service here.
+  addToCart(productId: string): void {
+    this.productService.addToCart(this.userId, productId, 1).subscribe({
+      next: () => alert('✅ Product added to cart!'),
+      error: (err) => console.error('Error adding to cart:', err)
+    });
   }
 }

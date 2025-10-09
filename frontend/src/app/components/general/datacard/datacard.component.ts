@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class DataCardComponent {
   @Input() item: string = '';
+  @Input() name: string = '';
   @Input() image: string = '';
   @Input() price: string = '';
   @Input() description: string = '';

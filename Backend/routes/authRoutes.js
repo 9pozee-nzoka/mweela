@@ -13,9 +13,9 @@ const router = express.Router();
  */
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -25,7 +25,7 @@ router.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({ username, email, password: hashedPassword });
 
     res.status(201).json({ message: "User registered successfully", user });
   } catch (err) {
@@ -80,7 +80,7 @@ router.post("/forgot-password", async (req, res) => {
 
     // Save token + expiry in DB
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 min
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 min
     await user.save();
 
     // Send reset email

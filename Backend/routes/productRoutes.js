@@ -5,37 +5,36 @@ import Product from "../models/Product.js";
 
 const router = express.Router();
 
-// ✅ Multer storage setup
+/* ----------------------------
+📦 MULTER STORAGE SETUP
+---------------------------- */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/"); // save uploaded images to backend/uploads/
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+    cb(null, Date.now() + path.extname(file.originalname)); // e.g., 17282438823.jpg
+  }
 });
 
 const upload = multer({ storage });
 
-/**
- * 🟩 CREATE PRODUCT (with image upload)
- * POST /api/products
- */
+/* ----------------------------
+🆕 CREATE PRODUCT
+---------------------------- */
 router.post("/", upload.single("image"), async (req, res) => {
   try {
     const { name, price, description, category } = req.body;
 
-    // ✅ Validate category
-    const allowedCategories = ["junior", "primary", "secondary", "general", "construction"];
-    if (category && !allowedCategories.includes(category)) {
-      return res.status(400).json({ error: "Invalid category" });
+    if (!name || !price || !category) {
+      return res.status(400).json({ error: "Name, price, and category are required" });
     }
 
     const product = new Product({
       name,
       price,
       description,
-      category: category || "general",
+      category: category.toLowerCase(),
       image: req.file ? `/uploads/${req.file.filename}` : null,
     });
 
@@ -47,11 +46,9 @@ router.post("/", upload.single("image"), async (req, res) => {
   }
 });
 
-/**
- * 🟦 FETCH PRODUCTS (optionally filtered by category)
- * GET /api/products
- * Example: /api/products?category=primary
- */
+/* ----------------------------
+📋 FETCH ALL PRODUCTS
+---------------------------- */
 router.get("/", async (req, res) => {
   try {
     const { category } = req.query;
@@ -91,5 +88,23 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+/* ----------------------------
+🏷️ FETCH PRODUCTS BY CATEGORY
+---------------------------- */
+router.get("/category/:category", async (req, res) => {
+  try {
+    const { category } = req.params;
+    const products = await Product.find({ category: category.toLowerCase() });
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* ----------------------------
+🖼️ STATIC FILES FOR IMAGES
+---------------------------- */
+router.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 export default router;

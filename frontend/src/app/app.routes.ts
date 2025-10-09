@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { BoardingComponent } from './components/general/boarding/boarding.component';
-import { HomeComponent } from './components/general/home/home.component';
+import { HomeComponent } from './components/pages/home/home.component';
 import { ProfileComponent } from './components/general/profile/profile.component';
 import { OrdersComponent } from './components/general/order/order.component';
 import { CartComponent } from './components/general/cart/cart.component';
