@@ -20,4 +20,5 @@ export class ButtonComponent {
   @Input() buttonText: string = '';
   @Input() buttonLink: string = '';
   @Input() buttonStyleClass: string = '';
+  @Input() disabled: boolean = false; // ✅ Add this line
 }

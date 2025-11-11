@@ -1,4 +1,3 @@
-// src/app/components/products/products.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductService } from '../../../services/product.service';
@@ -13,7 +12,11 @@ import { ProductService } from '../../../services/product.service';
 export class ProductListComponent implements OnInit {
   primaryProducts: any[] = [];
   juniorProducts: any[] = [];
-  userId = '64abc1234'; // TODO: replace later with real logged-in user ID
+
+  isLoading = true;
+  errorMessage = '';
+
+  userId = '64abc1234'; // TODO: replace with real user ID
 
   constructor(private productService: ProductService) {}
 
@@ -22,21 +25,33 @@ export class ProductListComponent implements OnInit {
   }
 
   loadProducts(): void {
-    this.productService.getProductsByCategory('Primary').subscribe({
+    this.isLoading = true;
+
+    const primary$ = this.productService.getProductsByCategory('primary');
+    const junior$ = this.productService.getProductsByCategory('junior');
+
+    primary$.subscribe({
       next: (res) => (this.primaryProducts = res),
-      error: (err) => console.error('Error loading primary products:', err)
+      error: (err) => {
+        console.error('Primary products error:', err);
+        this.errorMessage = 'Failed to load Primary products.';
+      },
     });
 
-    this.productService.getProductsByCategory('Junior').subscribe({
+    junior$.subscribe({
       next: (res) => (this.juniorProducts = res),
-      error: (err) => console.error('Error loading junior products:', err)
+      error: (err) => {
+        console.error('Junior products error:', err);
+        this.errorMessage = 'Failed to load Junior products.';
+      },
+      complete: () => (this.isLoading = false),
     });
   }
 
   addToCart(productId: string): void {
     this.productService.addToCart(this.userId, productId, 1).subscribe({
       next: () => alert('✅ Product added to cart!'),
-      error: (err) => console.error('Error adding to cart:', err)
+      error: (err) => console.error('Error adding to cart:', err),
     });
   }
 }
