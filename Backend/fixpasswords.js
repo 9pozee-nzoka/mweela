@@ -21,7 +21,7 @@ async function fixPasswords() {
       console.log(`\nUser: ${user.email}`);
 
       // Ask for the correct plaintext password you want to reset
-      const correctPassword = "Pozee@5268"; // Replace with actual password for this user
+      //const correctPassword = "Pozee@5268"; // Replace with actual password for this user
 
       // Hash the correct password
       const hashed = await bcrypt.hash(correctPassword, 10);
