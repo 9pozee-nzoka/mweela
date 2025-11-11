@@ -1,18 +1,24 @@
 .home-component{
-    display: flex;
+  border: 2px solid green;
+    border-radius: 10px;
     flex-direction: column;
     gap: 2rem;
     height: 100%;
+    padding: 20px;
 }
 
 .app-logo img {
   height: 45px;
   width: auto;
+  justify-content: left;
 }
 
 .data-cards{
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(6, 1fr);
     gap: 1rem;
     padding: 0;
+    border:2px solid green;
+    border-radius:10px;
+    background-color: red;
 }

@@ -7,7 +7,7 @@ const router = express.Router({ mergeParams: true });
 router.get("/", getOrCreateCart);
 
 // Add to cart
-router.post("/", addToCart);
+router.post("/add", addToCart);
 
 // Remove item from cart
 router.delete("/:productId", removeFromCart);

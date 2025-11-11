@@ -13,4 +13,12 @@
     justify-content: center;
     gap: 16px;
     flex-wrap: wrap;
+    object-fit: contain;
+}
+
+.item-name{
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: goldenrod;
+    text-align: center;
 }
