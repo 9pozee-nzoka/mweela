@@ -2,7 +2,10 @@
   <h2>Primary Products</h2>
   <div class="product-grid">
     <div *ngFor="let product of primaryProducts" class="product-card">
-      <img [src]="'http://localhost:3000/uploads/' + product.image" alt="{{ product.name }}" />
+      <img
+        [src]="'http://localhost:3000/uploads/' + product.image"
+        alt="{{ product.name }}"
+      />
       <h3>{{ product.name }}</h3>
       <p>{{ product.description }}</p>
       <p><strong>KES {{ product.price }}</strong></p>
@@ -13,7 +16,10 @@
   <h2>Junior Secondary Products</h2>
   <div class="product-grid">
     <div *ngFor="let product of juniorProducts" class="product-card">
-      <img [src]="'http://localhost:3000/uploads/' + product.image" alt="{{ product.name }}" />
+      <img
+        [src]="'http://localhost:3000/uploads/' + product.image"
+        alt="{{ product.name }}"
+      />
       <h3>{{ product.name }}</h3>
       <p>{{ product.description }}</p>
       <p><strong>KES {{ product.price }}</strong></p>

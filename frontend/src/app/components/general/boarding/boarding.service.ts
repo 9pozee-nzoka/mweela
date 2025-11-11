@@ -1,4 +1,3 @@
-// src/app/components/general/boarding/boarding.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -10,6 +9,7 @@ export class BoardingService {
   constructor(private http: HttpClient) {}
 
   login(data: { email: string; password: string }): Observable<any> {
+    console.log("Sending login request:", data); // 🔹 Debug
     return this.http.post(`${this.apiUrl}/login`, data);
   }
 
@@ -25,8 +25,8 @@ export class BoardingService {
     return this.http.post(`${this.apiUrl}/forgot-password`, { email });
   }
 
-  resetPassword(token: string, data: { password: string; confirmPassword: string }): Observable<any> {
-    return this.http.put(`${this.apiUrl}/reset-password/${token}`, data);
+  resetPassword(token: string, data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password/${token}`, data);
   }
 
   getProfile(userId: string): Observable<any> {

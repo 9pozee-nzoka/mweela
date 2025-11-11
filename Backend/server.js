@@ -74,7 +74,8 @@ const adminJs = new AdminJS({
 
 // ✅ CORS setup
 const allowedOrigins = [
-  "http://localhost:4200", // Angular dev
+  "http://localhost:4200",
+  "http://localhost:52513", // Angular dev
   "http://localhost:3000", // API testing
   // "https://your-production-domain.com", // add your prod frontend
 ];
@@ -138,3 +139,28 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
   console.log(`🛠️ AdminJS Panel: http://localhost:${PORT}/admin`);
 });
+
+
+// Utility function to recursively get routes
+function printRoutes(stack, prefix = "") {
+  stack.forEach((middleware) => {
+    if (middleware.route) {
+      // routes registered directly on the app
+      const path = prefix + middleware.route.path;
+      const methods = Object.keys(middleware.route.methods)
+        .map((m) => m.toUpperCase())
+        .join(", ");
+      console.log(`[ROUTE] ${methods} ${path}`);
+    } else if (middleware.name === "router" && middleware.handle.stack) {
+      // router middleware
+      const newPrefix = middleware.regexp.source
+        .replace("^\\", "")
+        .replace("\\/?(?=\\/|$)", "");
+      printRoutes(middleware.handle.stack, prefix + "/" + newPrefix);
+    }
+  });
+}
+
+// After all app.use() calls
+console.log("🔎 All registered routes:");
+printRoutes(app._router.stack);
