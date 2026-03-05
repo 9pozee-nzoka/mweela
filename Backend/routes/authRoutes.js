@@ -14,6 +14,7 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
   try {
     let { username, email, password } = req.body;
+
     if (!username || !email || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -26,6 +27,7 @@ router.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const user = await User.create({
       username,
       email,
@@ -43,7 +45,6 @@ router.post("/register", async (req, res) => {
  * LOGIN
  */
 router.post("/login", async (req, res) => {
-   console.log("Login payload received:", req.body);
   try {
     let { email, password } = req.body;
 
@@ -59,9 +60,11 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
     res.json({ message: "Login successful", token, user });
   } catch (err) {
@@ -83,22 +86,34 @@ router.post("/forgot-password", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: "User not found" });
 
+    // Generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
-    user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 mins
+    // Hash token before saving
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+
     await user.save();
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
     await sendMail({
       to: user.email,
       subject: "Password Reset Request",
       html: `
         <h3>Hello ${user.username || "User"}</h3>
-        <p>Reset your password:</p>
+        <p>You requested a password reset.</p>
+        <p>This link will expire in <b>15 minutes</b>.</p>
         <a href="${resetLink}" target="_blank">Reset Password</a>
       `,
     });
+
+    console.log("RESET EXPIRES AT:", new Date(user.resetPasswordExpires));
 
     res.json({ message: "Password reset email sent" });
   } catch (err) {
@@ -112,24 +127,27 @@ router.post("/forgot-password", async (req, res) => {
  */
 router.post("/reset-password/:token", async (req, res) => {
   try {
-    const { password, confirmPassword } = req.body;
+    const { password } = req.body;
     const { token } = req.params;
 
-    if (!password || !confirmPassword) {
-      return res.status(400).json({ error: "Password and confirmPassword are required" });
+    if (!password) {
+      return res.status(400).json({ error: "Password is required" });
     }
 
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: "Passwords do not match" });
-    }
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
 
     const user = await User.findOne({
-      resetPasswordToken: token,
+      resetPasswordToken: hashedToken,
       resetPasswordExpires: { $gt: Date.now() }
     });
 
     if (!user) {
-      return res.status(400).json({ error: "Invalid or expired reset token" });
+      return res.status(400).json({
+        error: "Reset link is invalid or has expired"
+      });
     }
 
     user.password = await bcrypt.hash(password, 10);
@@ -141,7 +159,7 @@ router.post("/reset-password/:token", async (req, res) => {
     res.json({ message: "Password reset successful" });
   } catch (err) {
     console.error("Reset-password error:", err);
-    res.status(500).json({ error: "Server error", details: err.message });
+    res.status(500).json({ error: "Server error" });
   }
 });
 

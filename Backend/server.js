@@ -5,6 +5,7 @@ import * as AdminJSMongoose from "@adminjs/mongoose";
 import AdminJSExpress from "@adminjs/express";
 import uploadFeature from "@adminjs/upload";
 import dotenv from "dotenv";
+dotenv.config();
 import connectDB from "./database.js";
 import Product from "./models/Product.js";
 import User from "./models/User.js";
@@ -21,7 +22,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
 
-dotenv.config();
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

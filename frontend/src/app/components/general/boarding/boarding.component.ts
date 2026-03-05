@@ -17,8 +17,22 @@ export class BoardingComponent implements OnInit {
   activeView: 'login' | 'register' | 'logout' | 'forgot' | 'reset' = 'login';
   message = '';
 
-  form = { username: '', email: '', password: '', confirmPassword: '' };
-  resetForm = { token: '', password: '', confirmPassword: '' };
+  // Auth forms
+  form = {
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  };
+
+  // Reset password form (NO token here)
+  resetForm = {
+    password: '',
+    confirmPassword: ''
+  };
+
+  // Reset token comes ONLY from URL
+  resetToken = '';
 
   constructor(
     private boardingService: BoardingService,
@@ -27,11 +41,12 @@ export class BoardingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Auto-set reset token if in URL
+    // Auto-detect reset token from URL
     this.route.params.subscribe(params => {
       if (params['token']) {
-        this.resetForm.token = params['token'];
+        this.resetToken = params['token'];
         this.activeView = 'reset';
+        this.message = '';
       }
     });
   }
@@ -45,84 +60,107 @@ export class BoardingComponent implements OnInit {
     return !!localStorage.getItem('token');
   }
 
+  // ---------------- LOGIN ----------------
   login() {
-  console.log("Login payload:", this.form); // 🔹 Debug log
+    this.boardingService.login({
+      email: this.form.email,
+      password: this.form.password
+    }).subscribe({
+      next: (res) => {
+        localStorage.setItem('token', res.token);
 
-  this.boardingService.login({
-    email: this.form.email,
-    password: this.form.password
-  }).subscribe({
-    next: (res) => {
-      console.log("Login response:", res);
+        if (res.user) {
+          localStorage.setItem('userId', res.user._id);
+          localStorage.setItem('username', res.user.username);
+          localStorage.setItem('role', res.user.role || 'customer');
+        }
 
-      localStorage.setItem('token', res.token);
+        this.message = 'Login successful';
+        this.activeView = 'logout';
+        this.resetInputs();
 
-      if (res.user) {
-        localStorage.setItem('userId', res.user._id);
-        localStorage.setItem('username', res.user.username);
-        localStorage.setItem('role', res.user.role || 'customer');
+        const role = localStorage.getItem('role');
+        if (role === 'admin') {
+          window.location.href = 'http://localhost:3000/admin';
+        } else {
+          this.router.navigate(['/home']);
+        }
+      },
+      error: (err) => {
+        console.error('Login error:', err);
+        this.message = err.error?.error || 'Login failed';
       }
+    });
+  }
 
-      this.message = 'Login successful';
-      this.activeView = 'logout';
-      this.resetInputs();
-
-      const role = localStorage.getItem('role');
-      if (role === 'admin') {
-        window.location.href = 'http://localhost:3000/admin';
-      } else {
-        this.router.navigate(['/home']);
-      }
-    },
-    error: (err) => {
-      console.error("Login error:", err);
-      this.message = err.error?.error || 'Login failed';
-    }
-  });
-}
-
-
+  // ---------------- REGISTER ----------------
   register() {
     if (this.form.password !== this.form.confirmPassword) {
       this.message = 'Passwords do not match';
       return;
     }
+
     this.boardingService.register(this.form).subscribe({
       next: () => {
         this.message = 'Registration successful, please login';
         this.setView('login');
         this.resetInputs();
       },
-      error: err => this.message = err.error?.error || 'Registration failed'
+      error: err => {
+        console.error('Register error:', err);
+        this.message = err.error?.error || 'Registration failed';
+      }
     });
   }
 
+  // ---------------- FORGOT PASSWORD ----------------
   forgotPassword() {
     if (!this.form.email) {
       this.message = 'Please enter your email';
       return;
     }
+
     this.boardingService.forgotPassword(this.form.email).subscribe({
-      next: () => this.message = 'Reset email sent, check your inbox',
-      error: err => this.message = err.error?.error || 'Failed to send reset email'
+      next: () => {
+        this.message = 'Reset email sent, check your inbox';
+      },
+      error: err => {
+        console.error('Forgot password error:', err);
+        this.message = err.error?.error || 'Failed to send reset email';
+      }
     });
   }
 
+  // ---------------- RESET PASSWORD ----------------
   resetPassword() {
+    if (!this.resetToken) {
+      this.message = 'Invalid or missing reset token';
+      return;
+    }
+
     if (this.resetForm.password !== this.resetForm.confirmPassword) {
       this.message = 'Passwords do not match';
       return;
     }
-    this.boardingService.resetPassword(this.resetForm.token, this.resetForm).subscribe({
-      next: () => {
-        this.message = 'Password reset successful, you can now login';
-        this.setView('login');
-        this.resetInputs();
-      },
-      error: err => this.message = err.error?.error || 'Reset failed'
-    });
+
+    this.boardingService
+      .resetPassword(this.resetToken, {
+        password: this.resetForm.password
+      })
+      .subscribe({
+        next: () => {
+          this.message = 'Password reset successful, you can now login';
+          this.setView('login');
+          this.resetInputs();
+        },
+        error: err => {
+          console.error('Reset password error:', err);
+          this.message = err.error?.error || 'Reset failed';
+        }
+      });
   }
 
+  // ---------------- LOGOUT ----------------
   logout() {
     this.boardingService.logout().subscribe(() => {
       localStorage.clear();
@@ -133,8 +171,20 @@ export class BoardingComponent implements OnInit {
     });
   }
 
+  // ---------------- HELPERS ----------------
   private resetInputs() {
-    this.form = { username: '', email: '', password: '', confirmPassword: '' };
-    this.resetForm = { token: '', password: '', confirmPassword: '' };
+    this.form = {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    };
+
+    this.resetForm = {
+      password: '',
+      confirmPassword: ''
+    };
+
+    this.resetToken = '';
   }
 }
