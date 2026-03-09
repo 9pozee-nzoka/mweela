@@ -1,10 +1,95 @@
-<nav class="navbar-component">
-        <div class="navbar-menu">
-        <a class="nav-link" routerLink="/home">HOME</a>
-        <a class="nav-link" routerLink="/product">JUNIOR SECONDARY</a>
-        <a class="nav-link" routerLink="/product">PRIMARY</a>
-        <a class="nav-link" routerLink="/product">PRODUCTS</a>  
-        <a class="nav-link" routerLink="/home">ABOUT US</a>
-        <a class="nav-link" routerLink="/home">CONTACT US</a>      
+<nav class="navbar" [class.scrolled]="isScrolled" [class.mobile-open]="isMobileMenuOpen">
+  <div class="navbar-container">
+    <!-- Logo -->
+    <a class="navbar-brand" routerLink="/home" (click)="closeMobileMenu()">
+      <span class="logo-icon">🎓</span>
+      <span class="logo-text">Mweela</span>
+    </a>
+
+    <!-- Desktop Menu -->
+    <div class="navbar-menu desktop-menu">
+      <a 
+        *ngFor="let item of menuItems" 
+        class="nav-link" 
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: item.route === '/home'}"
+      >
+        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
     </div>
+
+    <!-- Right Side Actions -->
+    <div class="navbar-actions">
+      <!-- Theme Toggle Button -->
+      <button 
+        class="theme-toggle" 
+        (click)="toggleTheme()" 
+        [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+        [title]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+      >
+        <span class="theme-icon sun" [class.active]="isDarkMode">☀️</span>
+        <span class="theme-icon moon" [class.active]="!isDarkMode">🌙</span>
+        <span class="theme-label">{{ isDarkMode ? 'Light' : 'Dark' }}</span>
+      </button>
+
+      <!-- Mobile Menu Toggle -->
+      <button 
+        class="mobile-toggle" 
+        (click)="toggleMobileMenu()"
+        [attr.aria-label]="isMobileMenuOpen ? 'Close menu' : 'Open menu'"
+        [attr.aria-expanded]="isMobileMenuOpen"
+      >
+        <span class="hamburger" [class.open]="isMobileMenuOpen">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" [class.open]="isMobileMenuOpen">
+    <div class="mobile-menu-header">
+      <div class="mobile-brand">
+        <span class="logo-icon">🎓</span>
+        <span class="logo-text">Mweela</span>
+      </div>
+      <div class="mobile-header-actions">
+        <!-- Theme Toggle in Mobile Header -->
+        <button 
+          class="theme-toggle mobile-theme-toggle" 
+          (click)="toggleTheme()" 
+          [attr.aria-label]="isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+        >
+          <span class="theme-icon sun" [class.active]="isDarkMode">☀️</span>
+          <span class="theme-icon moon" [class.active]="!isDarkMode">🌙</span>
+        </button>
+        <button class="close-btn" (click)="closeMobileMenu()">✕</button>
+      </div>
+    </div>
+    
+    <div class="mobile-menu-items">
+      <a 
+        *ngFor="let item of menuItems" 
+        class="mobile-nav-link" 
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: item.route === '/home'}"
+        (click)="closeMobileMenu()"
+      >
+        <span class="mobile-nav-icon">{{ item.icon }}</span>
+        <span class="mobile-nav-label">{{ item.label }}</span>
+      </a>
+    </div>
+    
+    <div class="mobile-menu-footer">
+      <p>&copy; 2026 Mweela Junior Supplies</p>
+    </div>
+  </div>
+
+  <!-- Overlay for mobile -->
+  <div class="mobile-overlay" [class.open]="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
 </nav>

@@ -5,17 +5,36 @@ import { ButtonComponent } from '../buttons/buttons.component';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-boarding',
   standalone: true,
   imports: [ButtonComponent, CommonModule, FormsModule],
   templateUrl: './boarding.component.html',
-  styleUrls: ['./boarding.component.css']
+  styleUrls: ['./boarding.component.css'],
+  animations: [
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(10px)' }),
+        animate('0.4s ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ])
+    ]),
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('0.3s ease-out', style({ opacity: 1 }))
+      ]),
+      transition(':leave', [
+        animate('0.3s ease-in', style({ opacity: 0 }))
+      ])
+    ])
+  ]
 })
 export class BoardingComponent implements OnInit {
   activeView: 'login' | 'register' | 'logout' | 'forgot' | 'reset' = 'login';
   message = '';
+  isError = false;
 
   // Auth forms
   form = {
@@ -41,27 +60,39 @@ export class BoardingComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Check if user is already logged in
+    if (this.isLoggedIn) {
+      this.activeView = 'logout';
+    }
+
     // Auto-detect reset token from URL
     this.route.params.subscribe(params => {
       if (params['token']) {
         this.resetToken = params['token'];
         this.activeView = 'reset';
         this.message = '';
+        this.isError = false;
       }
     });
   }
 
-  setView(view: any) {
+  setView(view: 'login' | 'register' | 'logout' | 'forgot' | 'reset') {
     this.activeView = view;
     this.message = '';
+    this.isError = false;
   }
 
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
 
+  getUsername(): string {
+    return localStorage.getItem('username') || 'User';
+  }
+
   // ---------------- LOGIN ----------------
   login() {
+    this.isError = false;
     this.boardingService.login({
       email: this.form.email,
       password: this.form.password
@@ -76,6 +107,7 @@ export class BoardingComponent implements OnInit {
         }
 
         this.message = 'Login successful';
+        this.isError = false;
         this.activeView = 'logout';
         this.resetInputs();
 
@@ -88,6 +120,7 @@ export class BoardingComponent implements OnInit {
       },
       error: (err) => {
         console.error('Login error:', err);
+        this.isError = true;
         this.message = err.error?.error || 'Login failed';
       }
     });
@@ -95,7 +128,10 @@ export class BoardingComponent implements OnInit {
 
   // ---------------- REGISTER ----------------
   register() {
+    this.isError = false;
+    
     if (this.form.password !== this.form.confirmPassword) {
+      this.isError = true;
       this.message = 'Passwords do not match';
       return;
     }
@@ -103,11 +139,13 @@ export class BoardingComponent implements OnInit {
     this.boardingService.register(this.form).subscribe({
       next: () => {
         this.message = 'Registration successful, please login';
+        this.isError = false;
         this.setView('login');
         this.resetInputs();
       },
       error: err => {
         console.error('Register error:', err);
+        this.isError = true;
         this.message = err.error?.error || 'Registration failed';
       }
     });
@@ -115,7 +153,10 @@ export class BoardingComponent implements OnInit {
 
   // ---------------- FORGOT PASSWORD ----------------
   forgotPassword() {
+    this.isError = false;
+    
     if (!this.form.email) {
+      this.isError = true;
       this.message = 'Please enter your email';
       return;
     }
@@ -123,9 +164,11 @@ export class BoardingComponent implements OnInit {
     this.boardingService.forgotPassword(this.form.email).subscribe({
       next: () => {
         this.message = 'Reset email sent, check your inbox';
+        this.isError = false;
       },
       error: err => {
         console.error('Forgot password error:', err);
+        this.isError = true;
         this.message = err.error?.error || 'Failed to send reset email';
       }
     });
@@ -133,12 +176,16 @@ export class BoardingComponent implements OnInit {
 
   // ---------------- RESET PASSWORD ----------------
   resetPassword() {
+    this.isError = false;
+
     if (!this.resetToken) {
+      this.isError = true;
       this.message = 'Invalid or missing reset token';
       return;
     }
 
     if (this.resetForm.password !== this.resetForm.confirmPassword) {
+      this.isError = true;
       this.message = 'Passwords do not match';
       return;
     }
@@ -150,11 +197,13 @@ export class BoardingComponent implements OnInit {
       .subscribe({
         next: () => {
           this.message = 'Password reset successful, you can now login';
+          this.isError = false;
           this.setView('login');
           this.resetInputs();
         },
         error: err => {
           console.error('Reset password error:', err);
+          this.isError = true;
           this.message = err.error?.error || 'Reset failed';
         }
       });
@@ -164,7 +213,8 @@ export class BoardingComponent implements OnInit {
   logout() {
     this.boardingService.logout().subscribe(() => {
       localStorage.clear();
-      this.message = 'Logged out';
+      this.message = 'Logged out successfully';
+      this.isError = false;
       this.activeView = 'login';
       this.resetInputs();
       this.router.navigate(['/login']);

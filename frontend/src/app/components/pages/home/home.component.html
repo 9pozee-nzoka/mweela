@@ -1,13 +1,137 @@
-<div class="home-component">
-  <app-search-bar></app-search-bar>
+<div class="home-container" [class.loading]="isLoading">
+  <!-- Navigation -->
   <app-navbar></app-navbar>
+  
+  <!-- Search Section -->
+  <section class="search-section">
+    <div class="search-wrapper">
+      <app-search-bar></app-search-bar>
+    </div>
+  </section>
 
-  <h1 style="text-align: center;">Welcome to Mweela Junior Supplies</h1>
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <div class="badge">✨ Premium Quality School Supplies</div>
+      <h1 class="hero-title">
+        Welcome to <span class="brand-highlight">Mweela Junior Supplies</span>
+      </h1>
+      <p class="hero-subtitle">
+        Your one-stop destination for primary and junior secondary educational materials. 
+        Quality products for the next generation of leaders.
+      </p>
+      <div class="hero-actions">
+        <button 
+          class="btn-primary" 
+          (click)="scrollToProducts()"
+          type="button"
+        >
+          Explore Products
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 17L17 7M17 7H7M17 7V17"/>
+          </svg>
+        </button>
+        <button 
+          class="btn-secondary" 
+          (click)="viewCatalog()"
+          type="button"
+        >
+          View Catalog
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card card-1">📖 Textbooks</div>
+      <div class="floating-card card-2">✏️ Stationery</div>
+      <div class="floating-card card-3">🎨 Art Supplies</div>
+      <div class="hero-bg-pattern"></div>
+    </div>
+  </header>
 
-  <div class="data-cards">
-    <app-products> 
-        [name]= "''"
-    </app-products>
+  <!-- Stats Section -->
+  <section class="stats-section" *ngIf="stats && stats.length > 0">
+    <div class="stats-grid">
+      <div *ngFor="let stat of stats; trackBy: trackByStat" class="stat-card">
+        <div class="stat-icon">{{ stat.icon }}</div>
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section id="products" class="products-section">
+    <div class="section-header">
+      <h2>Featured Collections</h2>
+      <p>Handpicked educational materials for every learning stage</p>
+    </div>
     
-  </div>
+    <div class="products-wrapper">
+      <app-products></app-products>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h3>Secure Shopping</h3>
+      <p>100% secure payment processing with M-Pesa integration</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6v6l4 2"/>
+        </svg>
+      </div>
+      <h3>Fast Delivery</h3>
+      <p>Same-day delivery available within Nairobi, next-day nationwide</p>
+    </div>
+    
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+      <h3>Curriculum Aligned</h3>
+      <p>All products matched to current CBC and 8-4-4 requirements</p>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter-section">
+    <div class="newsletter-content">
+      <h2>Stay Updated</h2>
+      <p>Get notified about new arrivals and exclusive offers</p>
+      <div class="newsletter-form">
+        <input 
+          type="email" 
+          placeholder="Enter your email address" 
+          [(ngModel)]="email"
+          (keyup.enter)="subscribe()"
+        />
+        <button 
+          class="btn-subscribe" 
+          (click)="subscribe()"
+          type="button"
+          [disabled]="!email"
+        >
+          Subscribe
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="home-footer">
+    <p>&copy; {{ currentYear }} Mweela Junior Supplies. All rights reserved.</p>
+  </footer>
 </div>
