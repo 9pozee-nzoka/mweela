@@ -5,7 +5,7 @@ const productSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     price: { type: Number, required: true },
     description: { type: String, trim: true },
-    image: { type: String }, // store relative path like 'products/xxxx.png'
+    image: { type: String }, // stores path like 'products/xxxx.png'
 
     category: {
       type: String,
@@ -14,9 +14,8 @@ const productSchema = new mongoose.Schema(
       lowercase: true,
     },
   },
-  { timestamps: true } // adds createdAt and updatedAt automatically
+  { timestamps: true }
 );
 
 const Product = mongoose.model("Product", productSchema);
-
 export default Product;
